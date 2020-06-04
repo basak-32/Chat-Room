@@ -1,0 +1,20 @@
+body {
+  background: linear-gradient(to right, rgb(99, 196, 238), rgb(223, 88, 167));
+}
+
+.container {
+  max-width: 600px;
+}
+
+li {
+  list-style-type: none;
+  text-align: left;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.hr {
+  border-top: 0.1rem solid #555;
+}
