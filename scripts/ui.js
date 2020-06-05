@@ -1,15 +1,15 @@
 const list = document.querySelector('.chat-list');
 
 const addMssg = (mssgObj) => {
-  let time = dateFns.distanceInWordsToNow(
-    mssgObj.created_at.toDate(),
-    { addSuffix: true }
-  );
+  // let time = dateFns.distanceInWordsToNow(
+  //   mssgObj.created_at.toDate(),
+  //   { addSuffix: true }
+  // );
   let html = `
     <li>
       <span class="username mr-1">${mssgObj.username}:</span>
       <span class="mssg">${mssgObj.message}</span>
-      <div class="time text-muted">${time}</div>
+      <div class="time text-muted">${mssgObj.created_at.toDate()}</div>
     </li>
     <div class="hr"></div>
   `
