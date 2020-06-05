@@ -4,11 +4,16 @@ body {
 
 .container {
   max-width: 600px;
+  max-height: 100vh;
 }
 
 li {
   list-style-type: none;
   text-align: left;
+}
+
+.me {
+  text-align: right !important;
 }
 
 .username {
@@ -18,3 +23,4 @@ li {
 .hr {
   border-top: 0.1rem solid #555;
 }
+

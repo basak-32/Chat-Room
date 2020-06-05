@@ -22,12 +22,19 @@ class Chatroom {
   changeName(name) {
     this.username = name;
   }
+
+  changeRoom(room) {
+    this.room = room;
+  }
 }
 
 
 const username = localStorage.getItem('username') ? localStorage.getItem('username') : 'Anonymous';
 // console.log(username);
 
-const chatroom = new Chatroom('general', username);
+const room = localStorage.getItem('room') ? localStorage.getItem('room') : 'general';
+
+
+const chatroom = new Chatroom(room, username);
 // console.log(chatroom);
 

@@ -43,16 +43,35 @@ const addMssg = (mssgObj) => {
     unit = 'years';
   }
 
-  let html = `
-    <li>
-      <span class="username mr-1">${mssgObj.username}:</span>
-      <span class="mssg">${mssgObj.message}</span>
-      <div class="time text-muted">${Math.round(time)} ${unit} ago</div>
-    </li>
-    <div class="hr"></div>
-  `
+
+  let html = '';
+
+  // console.log(mssgObj.username);
+  if (mssgObj.username === localStorage.getItem('username')) {
+    // console.log(mssgObj.username);
+    // console.log(list);
+
+    html = `
+      <li class="me">
+        
+        <span class="mssg">${mssgObj.message}</span>
+        <div class="time text-muted">${Math.round(time)} ${unit} ago</div>
+      </li>
+      <div class="hr"></div>
+    `
+  } else {
+    html = `
+      <li>
+        <span class="username mr-1">${mssgObj.username}:</span>
+        <span class="mssg">${mssgObj.message}</span>
+        <div class="time text-muted">${Math.round(time)} ${unit} ago</div>
+      </li>
+      <div class="hr"></div>
+    `
+  } 
   list.innerHTML += html;
 }
+
 
 
 // const updateUI = () => {
@@ -67,13 +86,16 @@ const addMssg = (mssgObj) => {
 // }
 
 
-db.collection('chats').orderBy("created_at", "asc").onSnapshot(snapshot => {
-  // console.log(snapshot.docChanges());
-  // console.log(snapshot.docChanges()[0].doc.data());
-  snapshot.docChanges().forEach(change => {
-    // console.log(change.doc.data());
-    if (change.type === 'added') {
-      addMssg(change.doc.data());
-    }
+const updateUI = () => {
+  db.collection('chats').orderBy("created_at", "asc").onSnapshot(snapshot => {
+    // console.log(snapshot.docChanges());
+    // console.log(snapshot.docChanges()[0].doc.data());
+    snapshot.docChanges().forEach(change => {
+      // console.log(change.doc.data());
+      // console.log(change.doc.data().room);
+      if (change.type === 'added' && change.doc.data().room === localStorage.getItem('room')) {
+        addMssg(change.doc.data());
+      }
+    })
   })
-})
+}
