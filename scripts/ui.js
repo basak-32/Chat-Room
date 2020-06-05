@@ -5,11 +5,49 @@ const addMssg = (mssgObj) => {
   //   mssgObj.created_at.toDate(),
   //   { addSuffix: true }
   // );
+
+  // console.log(Date.now());
+  const now = Date.now() / 1000;
+  // console.log(now);
+
+  mssgTime = mssgObj.created_at.seconds;
+  // console.log(mssgTime);
+
+  const secondsAgo = now - mssgTime;
+  // console.log(timeAgo);
+
+  const minutesAgo = secondsAgo/60;
+
+  let time = 0;
+  let unit = '';
+  if (secondsAgo / 60 < 1) {
+    time = secondsAgo;
+    unit = 'seconds';
+  } else if (secondsAgo / (60 * 60) < 1) {
+    time = secondsAgo / 60;
+    unit = 'minutes';
+  } else if (secondsAgo / (60 * 60 * 24) < 1) {
+    time = secondsAgo / (60 * 60);
+    unit = 'hours';
+  } else if (secondsAgo / (60 * 60 * 24 * 7) < 1) {
+    time = secondsAgo / (60 * 60 * 24);
+    unit = 'days';
+  } else if (secondsAgo / (60 * 60 * 24 * 7 * 4) < 1) {
+    time = secondsAgo / (60 * 60 * 24 * 7);
+    unit = 'weeks';
+  } else if (secondsAgo / (60 * 60 * 24 * 7 * 4 * 12) < 1) {
+    time = secondsAgo / (60 * 60 * 24 * 7 * 4);
+    unit = 'months';
+  } else if (secondsAgo / (60 * 60 * 24 * 7 * 4 * 12) >= 1) {
+    time = secondsAgo / (60 * 60 * 24 * 7 * 4 * 12);
+    unit = 'years';
+  }
+
   let html = `
     <li>
       <span class="username mr-1">${mssgObj.username}:</span>
       <span class="mssg">${mssgObj.message}</span>
-      <div class="time text-muted">${mssgObj.created_at.toDate()}</div>
+      <div class="time text-muted">${Math.round(time)} ${unit} ago</div>
     </li>
     <div class="hr"></div>
   `
