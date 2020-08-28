@@ -1,32 +1,45 @@
-const nameForm = document.querySelector('.new-name');
 const convoBody = document.querySelector('.btns-and-convo');
 const chatList = document.querySelector('.chat-list');
 const roomsButtons = document.querySelector('.chat-rooms');
 const mssgForm = document.querySelector('.new-chat');
 
 
+const chatAndAll = document.querySelector('.chat-and-all');
 
-if (localStorage.getItem('username')) {
-  nameForm.classList.add('d-none');
-  convoBody.classList.remove('d-none');
+
+const loggedInNavLinks = document.querySelectorAll('.logged-in');
+const loggedOutNavLinks = document.querySelectorAll('.logged-out');
+const joinConversation = document.querySelector('.join-conversation');
+
+const setUpNavLinks = (user) => {
+  if (user) {
+    chatAndAll.classList.remove('d-none');
+    joinConversation.classList.add('d-none');
+
+    loggedInNavLinks.forEach(link => {
+      link.classList.remove('d-none');
+    });
+    loggedOutNavLinks.forEach(link => {
+      link.classList.add('d-none');
+    })
+   } else {
+    chatAndAll.classList.add('d-none');
+    joinConversation.classList.remove('d-none');
+
+    loggedInNavLinks.forEach(link => {
+      link.classList.add('d-none');
+    });
+    loggedOutNavLinks.forEach(link => {
+      link.classList.remove('d-none');
+    })
+  }
 }
 
-nameForm.addEventListener('submit', event => {
-  event.preventDefault();
 
-  const username = nameForm.name.value.trim();
-
-  localStorage.setItem('username', username);
-
-  nameForm.name.value = '';
-
-  nameForm.classList.add('d-none');
-  convoBody.classList.remove('d-none');
-})
 
 
 const renderChats = (doc) => {
-  if (doc.data().room === localStorage.getItem('room')) {
+  if (doc.data().room === currentRoom) {
     let li = document.createElement('li');
     let username = document.createElement('span');
     let message = document.createElement('span');
@@ -72,7 +85,7 @@ const renderChats = (doc) => {
 
     message.textContent = doc.data().message;
 
-    if (doc.data().username === localStorage.getItem('username')) {
+    if (doc.data().username === currentUsername) {
       li.appendChild(message);
       li.classList.add('me');
     } else {
@@ -87,38 +100,31 @@ const renderChats = (doc) => {
 }
 
 
-if (!localStorage.getItem('room')) {
-  localStorage.setItem('room', 'general');
-}
-
-db.collection('chats').orderBy('created_at').onSnapshot(snapshot => {
-  // console.log(snapshot.docChanges());
-  let changes = snapshot.docChanges();
-
-  changes.forEach(change => {
-    // console.log(change);
-    if (change.type == 'added') {
-      renderChats(change.doc);
-    }
-  })
-})
-
-// db.collection('chats').get().then(snapshot => {
-//   snapshot.docs.forEach(doc => {
-//     renderChats(doc);
-//   });
-// })
 
 roomsButtons.addEventListener('click', event => {
   // console.log(event.target.id);
-  localStorage.setItem('room', event.target.id);
-
-  chatList.innerHTML = '';
-  db.collection('chats').where('room', '==', localStorage.getItem('room')).orderBy('created_at').get().then(snapshot => {
-    snapshot.docs.forEach(doc => {
-      renderChats(doc);
-    });
-  })
+  if (event.target.id) {
+    currentRoom = event.target.id;
+    // localStorage.setItem('room', event.target.id);
+    db.collection('users').doc(currentUserId).get().then(doc => {
+      const age = doc.data().age;
+      const current_room = doc.data().current_room;
+      const username = doc.data().username;
+  
+      db.collection('users').doc(currentUserId).set({
+      age: age,
+      current_room: event.target.id,
+      username: username
+      }).then(() => {
+        chatList.innerHTML = '';
+        db.collection('chats').orderBy('created_at').get().then(snapshot => {
+          snapshot.docs.forEach(doc => {
+            renderChats(doc);
+          });
+        })
+      })
+    })
+  }
 })
 
 
@@ -132,112 +138,19 @@ mssgForm.addEventListener('submit', event => {
   const now = new Date();
 
   db.collection('chats').add({
-    username: localStorage.getItem('username'),
-    room: localStorage.getItem('room'),
+    username: currentUsername,
+    room: currentRoom,
     message: message,
     created_at: firebase.firestore.Timestamp.fromDate(now)
+  }).then(chat => {
+    // console.log(chat.id);
+    db.collection('chats').doc(chat.id).get().then(doc => {
+      // console.log(doc.data());
+      renderChats(doc);
+    })
   })
 })
 
 
 
 
-
-// const mssgForm = document.querySelector('.new-chat');
-// const nameForm = document.querySelector('.new-name');
-// const convoBody = document.querySelector('.btns-and-convo');
-// const roomsButtons = document.querySelector('.chat-rooms');
-
-
-// if (localStorage.getItem('username')) {
-//   nameForm.classList.add('d-none');
-//   convoBody.classList.remove('d-none');
-// }
-
-// nameForm.addEventListener('submit', event => {
-//   event.preventDefault();
-
-//   const username = nameForm.name.value.trim();
-//   console.log(username);
-//   nameForm.reset();
-
-//   chatroom.changeName(username);
-
-//   localStorage.setItem('username', username);
-
-//   nameForm.classList.add('d-none');
-//   convoBody.classList.remove('d-none');
-// })
-
-
-// // updateUI();
-
-
-// mssgForm.addEventListener('submit', event => {
-//   event.preventDefault();
-
-//   message = mssgForm.message.value.trim();
-//   // console.log(message);
-//   chatroom.addChat(message)
-//   .then(() => {
-//     mssgForm.reset();
-//   })
-//   .catch(error => console.log(error));
-// })
-
-
-// roomsButtons.addEventListener('click', event => {
-//   if (event.target.id === 'general') {
-
-//     // console.log(event.target.id);
-//     let room = event.target.id;
-
-//     // console.log(list.innerHTML);
-//     list.innerHTML = '';
-
-//     localStorage.setItem('room', room);
-
-//     chatroom.changeRoom(room);
-
-//     updateUI();
-//   } else if (event.target.id === 'sports') {
-
-//     // console.log(event.target.id);
-//     let room = event.target.id;
-
-//     // console.log(list.innerHTML);
-//     list.innerHTML = '';
-
-//     localStorage.setItem('room', room);
-
-//     chatroom.changeRoom(room);
-
-//     updateUI();
-//   } else if (event.target.id === 'music') {
-
-//     // console.log(event.target.id);
-//     let room = event.target.id;
-
-//     // console.log(list.innerHTML);
-//     list.innerHTML = '';
-
-//     localStorage.setItem('room', room);
-
-//     chatroom.changeRoom(room);
-
-//     updateUI();
-//   } else if (event.target.id === 'coding') {
-
-//     // console.log(event.target.id);
-//     let room = event.target.id;
-
-//     // console.log(list.innerHTML);
-//     list.innerHTML = '';
-
-//     localStorage.setItem('room', room);
-
-//     chatroom.changeRoom(room);
-
-//     updateUI();
-//   }
-// });
