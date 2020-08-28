@@ -105,7 +105,7 @@ roomsButtons.addEventListener('click', event => {
   // console.log(event.target.id);
   if (event.target.id) {
     currentRoom = event.target.id;
-    // localStorage.setItem('room', event.target.id);
+    
     db.collection('users').doc(currentUserId).get().then(doc => {
       const age = doc.data().age;
       const current_room = doc.data().current_room;
@@ -119,7 +119,7 @@ roomsButtons.addEventListener('click', event => {
         chatList.innerHTML = '';
         db.collection('chats').orderBy('created_at').get().then(snapshot => {
           snapshot.docs.forEach(doc => {
-            renderChats(doc);
+            renderChats(doc);          
           });
         })
       })
@@ -142,13 +142,15 @@ mssgForm.addEventListener('submit', event => {
     room: currentRoom,
     message: message,
     created_at: firebase.firestore.Timestamp.fromDate(now)
-  }).then(chat => {
-    // console.log(chat.id);
-    db.collection('chats').doc(chat.id).get().then(doc => {
-      // console.log(doc.data());
-      renderChats(doc);
-    })
   })
+
+  //.then(chat => {
+  //   console.log(chat.id);
+  //   db.collection('chats').doc(chat.id).get().then(doc => {
+  //     // console.log(doc.data());
+  //     renderChats(doc);
+  //   })
+  // })
 })
 
 

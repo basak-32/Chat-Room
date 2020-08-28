@@ -1,3 +1,14 @@
+db.collection('chats').orderBy('created_at').onSnapshot(snapshot => {
+  let changes = snapshot.docChanges();
+    
+  changes.forEach(change => {
+    // console.log(change);
+    if (change.type === 'added') {
+      renderChats(change.doc); 
+    }
+  })
+})
+
 let currentUsername = '';
 let currentRoom = '';
 let currentUserId = '';
@@ -6,7 +17,7 @@ const accountDetails = document.querySelector('.account-details');
 
 auth.onAuthStateChanged(user => {
   setUpNavLinks(user);
-  
+
   if (user) {
     // console.log(user.uid);
     currentUserId = user.uid;
@@ -25,26 +36,24 @@ auth.onAuthStateChanged(user => {
 
     chatList.innerHTML = '';
 
-    db.collection('chats').orderBy('created_at').get().then(snapshot => {
-      snapshot.docs.forEach(doc => {
-        renderChats(doc);
-      });
-    })
+    // db.collection('chats').orderBy('created_at').get().then(snapshot => {
+    //   snapshot.docs.forEach(doc => {
+    //     renderChats(doc);
+    //   });
+    // })
 
-    // db.collection('chats').orderBy('created_at').onSnapshot(snapshot => {
-    //   // console.log(snapshot.docChanges());
+    // renderDB();
+    // db.collection('chats').orderBy('created_at', 'asc').onSnapshot(snapshot => {
+    //   console.log(snapshot.docChanges());
     //   let changes = snapshot.docChanges();
     
     //   changes.forEach(change => {
     //     // console.log(change);
-    //     if (change.type == 'added') {
-    //       renderChats(change.doc);
+    //     if (change.type === 'added') {
+    //       renderChats(change.doc); 
     //     }
     //   })
     // })
-  } else {
-    // console.log('user logged out!!');
-    // chatList.innerHTML = '<h5 class="text-center">Login to join conversation..</h5>';
   }
 })
 
