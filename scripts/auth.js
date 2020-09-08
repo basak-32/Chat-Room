@@ -1,13 +1,13 @@
-db.collection('chats').orderBy('created_at').onSnapshot(snapshot => {
-  let changes = snapshot.docChanges();
+// db.collection('chats').orderBy('created_at').onSnapshot(snapshot => {
+//   let changes = snapshot.docChanges();
     
-  changes.forEach(change => {
-    // console.log(change);
-    if (change.type === 'added') {
-      renderChats(change.doc); 
-    }
-  })
-})
+//   changes.forEach(change => {
+//     // console.log(change);
+//     if (change.type === 'added') {
+//       renderChats(change.doc); 
+//     }
+//   })
+// })
 
 let currentUsername = '';
 let currentRoom = '';
@@ -54,6 +54,17 @@ auth.onAuthStateChanged(user => {
     //     }
     //   })
     // })
+
+    db.collection('chats').orderBy('created_at').onSnapshot(snapshot => {
+      let changes = snapshot.docChanges();
+        
+      changes.forEach(change => {
+        // console.log(change);
+        if (change.type === 'added') {
+          renderChats(change.doc); 
+        }
+      })
+    })
   }
 })
 
